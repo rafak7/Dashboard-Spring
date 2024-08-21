@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:src="@{/js/scripts.js}"></script>
+</head>
+
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2">
+            <!-- Sidebar com Thymeleaf -->
+            <div th:replace="layout/sidebar :: sidebar"></div>
+        </div>
+        <div class="col-md-10">
+            <h1>Dashboard</h1>
+
+            <!-- Cartões -->
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h5 class="card-title">Total de Usuários</h5>
+                            <p class="card-text" th:text="${totalUsuarios}">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h5 class="card-title">Feedbacks Recebidos</h5>
+                            <p class="card-text" th:text="${totalFeedbacks}">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h5 class="card-title">Total de Cargos</h5>
+                            <p class="card-text" th:text="${totalCargos}">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico -->
+            <div class="row mb-2">
+                <div class="col-md-12">
+                    <canvas id="myChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Tabela de Feedbacks -->
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Últimos Feedbacks</h2>
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuário</th>
+                            <th>Comentário</th>
+                            <th>Rating</th>
+                            <th>Data</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="feedback : ${feedbacksRecentes}">
+                            <td th:text="${feedback.id}"></td>
+                            <td th:text="${feedback.usuario.nome}"></td>
+                            <td th:text="${feedback.comentario}"></td>
+                            <td th:text="${feedback.rating}"></td>
+                            <td th:text="${feedback.data}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

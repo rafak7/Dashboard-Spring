@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Feedbacks</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <script th:src="@{/js/scripts.js}"></script>
+</head>
+<body>
+<div th:include="layout/navbar :: navbar"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2">
+            <div th:include="layout/sidebar :: sidebar"></div>
+        </div>
+        <div class="col-md-10">
+            <h1>Feedbacks</h1>
+            <a href="/feedbacks/novo" class="btn btn-primary mb-3">Adicionar Novo Feedback</a>
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Comentário</th>
+                    <th>Rating</th>
+                    <th>Usuário</th>
+                    <th>Ações</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="feedback : ${feedbacks}">
+                    <td th:text="${feedback.id}"></td>
+                    <td th:text="${feedback.comentario}"></td>
+                    <td th:text="${feedback.rating}"></td>
+                    <td th:text="${feedback.usuario.nome}"></td>
+                    <td>
+                        <a th:href="@{/feedbacks/editar/{id}(id=${feedback.id})}" class="btn btn-sm btn-warning">Editar</a>
+                        <a th:href="@{/feedbacks/deletar/{id}(id=${feedback.id})}" class="btn btn-sm btn-danger">Deletar</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

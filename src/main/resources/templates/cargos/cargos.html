@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Cargos</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <script th:src="@{/js/scripts.js}"></script>
+</head>
+<body>
+<div th:include="layout/navbar :: navbar"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2">
+            <div th:include="layout/sidebar :: sidebar"></div>
+        </div>
+        <div class="col-md-10">
+            <h1>Cargos</h1>
+            <a href="/cargos/novo" class="btn btn-primary mb-3">Adicionar Novo Cargo</a>
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Ações</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="cargo : ${cargos}">
+                    <td th:text="${cargo.id}"></td>
+                    <td th:text="${cargo.nome}"></td>
+                    <td th:text="${cargo.descricao}"></td>
+                    <td>
+                        <a th:href="@{/cargos/editar/{id}(id=${cargo.id})}" class="btn btn-sm btn-warning">Editar</a>
+                        <a th:href="@{/cargos/deletar/{id}(id=${cargo.id})}" class="btn btn-sm btn-danger">Deletar</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

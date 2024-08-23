@@ -31,7 +31,6 @@ public class Feedback {
 
     private LocalDateTime data;
 
-    // Esse campo pode ser inicializado automaticamente na criação do feedback
     @PrePersist
     protected void onCreate() {
         this.data = LocalDateTime.now();

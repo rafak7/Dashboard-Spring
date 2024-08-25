@@ -9,6 +9,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 @Controller
 public class UsuarioController {
@@ -21,15 +24,16 @@ public class UsuarioController {
 
     @GetMapping("/usuarios")
     public String listarUsuarios(Model model) {
-        model.addAttribute("usuarios", usuarioService.listarTodos());
-        return "usuario/listar";
+        List<Usuario> usuarios = usuarioService.listarTodos();
+        model.addAttribute("usuarios", usuarios);
+        return "admin/usuarios"; // Nome do template com o caminho
     }
 
     @GetMapping("/usuarios/novo")
     public String novoUsuarioForm(Model model) {
         model.addAttribute("usuario", new Usuario());
         model.addAttribute("cargos", cargoService.listarTodos());
-        return "usuario/novo";
+        return "admin/formulario";  // Corrigido para usar o caminho correto
     }
 
     @PostMapping("/usuarios")
@@ -40,20 +44,26 @@ public class UsuarioController {
 
     @GetMapping("/usuarios/editar/{id}")
     public String editarUsuarioForm(@PathVariable Long id, Model model) {
-        model.addAttribute("usuario", usuarioService.buscarPorId(id).orElseThrow(() -> new IllegalArgumentException("ID inválido:" + id)));
+        Usuario usuario = usuarioService.buscarPorId(id)
+                .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + id));
+        model.addAttribute("usuario", usuario);
         model.addAttribute("cargos", cargoService.listarTodos());
-        return "usuario/editar";
+        return "admin/formulario";  // Corrigido para usar o caminho correto
     }
 
     @PostMapping("/usuarios/editar/{id}")
     public String atualizarUsuario(@PathVariable Long id, Usuario usuario) {
-        usuario.setId(id);
+        Usuario usuarioExistente = usuarioService.buscarPorId(id)
+                .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + id));
+        usuario.setId(usuarioExistente.getId());
         usuarioService.salvar(usuario);
         return "redirect:/usuarios";
     }
 
     @GetMapping("/usuarios/deletar/{id}")
     public String deletarUsuario(@PathVariable Long id) {
+        Usuario usuario = usuarioService.buscarPorId(id)
+                .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + id));
         usuarioService.deletarPorId(id);
         return "redirect:/usuarios";
     }

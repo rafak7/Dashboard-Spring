@@ -68,14 +68,8 @@
                             <th>Data</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        <tr th:each="feedback : ${feedbacksRecentes}">
-                            <td th:text="${feedback.id}"></td>
-                            <td th:text="${feedback.usuario.nome}"></td>
-                            <td th:text="${feedback.comentario}"></td>
-                            <td th:text="${feedback.rating}"></td>
-                            <td th:text="${feedback.data}"></td>
-                        </tr>
+                        <tbody id="feedback-table-body">
+                        <!-- Feedbacks serão inseridos aqui via JavaScript -->
                         </tbody>
                     </table>
                 </div>
@@ -84,6 +78,100 @@
         </div>
     </div>
 </div>
+
+<script>
+    function formatDate(dateString) {
+        const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+        return new Date(dateString).toLocaleDateString('pt-BR', options);
+    }
+
+    function fetchFeedbacksAndRatings() {
+        console.log('Fetching feedbacks...');
+
+        fetch('https://expi-e7219-default-rtdb.firebaseio.com/feedback.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro na resposta da API');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Dados recebidos:', data);
+
+                const tableBody = document.getElementById('feedback-table-body');
+                tableBody.innerHTML = '';
+
+                let ratingCounts = {};
+
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const feedback = data[key];
+
+                        if (feedback && feedback.id && feedback.usuario && feedback.comentario && feedback.rating && feedback.data) {
+                            const formattedDate = formatDate(feedback.data);
+
+                            const row = document.createElement('tr');
+
+                            row.innerHTML = `
+                                <td>${feedback.id}</td>
+                                <td>${feedback.usuario}</td>
+                                <td>${feedback.comentario}</td>
+                                <td>${feedback.rating}</td>
+                                <td>${formattedDate}</td>
+                            `;
+
+                            tableBody.appendChild(row);
+
+                            // Contagem dos ratings para o gráfico
+                            if (ratingCounts[feedback.rating]) {
+                                ratingCounts[feedback.rating]++;
+                            } else {
+                                ratingCounts[feedback.rating] = 1;
+                            }
+                        } else {
+                            console.warn('Feedback inválido ou propriedades ausentes:', feedback);
+                        }
+                    });
+                } else {
+                    console.log('Nenhum feedback encontrado.');
+                }
+
+                updateChart(ratingCounts);
+            })
+            .catch(error => {
+                console.error('Erro ao buscar feedbacks:', error);
+            });
+    }
+
+    function updateChart(ratingCounts) {
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const labels = Object.keys(ratingCounts);
+        const data = Object.values(ratingCounts);
+
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Feedbacks',
+                    data: data,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    window.onload = fetchFeedbacksAndRatings;
+</script>
 
 </body>
 </html>

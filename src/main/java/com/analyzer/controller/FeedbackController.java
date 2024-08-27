@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.List;
+
 @Controller
 public class FeedbackController {
 
@@ -21,15 +23,16 @@ public class FeedbackController {
 
     @GetMapping("/feedbacks")
     public String listarFeedbacks(Model model) {
-        model.addAttribute("feedbacks", feedbackService.listarTodos());
-        return "feedback/listar";
+        List<Feedback> feedbacks = feedbackService.listarTodos();
+        model.addAttribute("feedbacks", feedbacks);
+        return "feedbacks/listar";
     }
 
     @GetMapping("/feedbacks/novo")
     public String novoFeedbackForm(Model model) {
         model.addAttribute("feedback", new Feedback());
         model.addAttribute("usuarios", usuarioService.listarTodos());
-        return "feedback/novo";
+        return "feedbacks/novo";
     }
 
     @PostMapping("/feedbacks")
@@ -42,7 +45,7 @@ public class FeedbackController {
     public String editarFeedbackForm(@PathVariable Long id, Model model) {
         model.addAttribute("feedback", feedbackService.buscarPorId(id).orElseThrow(() -> new IllegalArgumentException("ID inválido:" + id)));
         model.addAttribute("usuarios", usuarioService.listarTodos());
-        return "feedback/editar";
+        return "feedbacks/editar";
     }
 
     @PostMapping("/feedbacks/editar/{id}")

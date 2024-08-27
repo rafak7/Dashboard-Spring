@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Feedbacks</title>
+    <link rel="stylesheet" th:href="@{/css/feedback.css}">
+</head>
+<body>
+
+<div class="feedback-container">
+    <div class="back-button">
+        <a href="/dashboard">
+            <span class="icon">&#8592;</span> Voltar
+        </a>
+    </div>
+    <h2>Últimos Feedbacks</h2>
+    <table class="feedback-table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Usuário</th>
+            <th>Comentário</th>
+            <th>Rating</th>
+            <th>Data</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr onclick="openPopup('1', 'João Silva', 'Muito bom!', '5', '25/08/2024')">
+            <td>1</td>
+            <td>João Silva</td>
+            <td>Muito bom!</td>
+            <td>5</td>
+            <td>25/08/2024</td>
+            <td class="feedback-actions">
+                <button onclick="event.stopPropagation();">Editar</button>
+                <button onclick="event.stopPropagation();">Excluir</button>
+            </td>
+        </tr>
+        <tr onclick="openPopup('2', 'Maria Souza', 'Excelente!', '4.5', '24/08/2024')">
+            <td>2</td>
+            <td>Maria Souza</td>
+            <td>Excelente!</td>
+            <td>4.5</td>
+            <td>24/08/2024</td>
+            <td class="feedback-actions">
+                <button onclick="event.stopPropagation();">Editar</button>
+                <button onclick="event.stopPropagation();">Excluir</button>
+            </td>
+        </tr>
+        <!-- Outros feedbacks -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Popup para exibição detalhada -->
+<div id="feedbackPopup" class="popup">
+    <div class="popup-content">
+        <span class="close-btn" onclick="closePopup()">&times;</span>
+        <h2>Detalhes do Feedback</h2>
+        <p><strong>ID:</strong> <span id="popup-id"></span></p>
+        <p><strong>Usuário:</strong> <span id="popup-user"></span></p>
+        <p><strong>Comentário:</strong> <span id="popup-comment"></span></p>
+        <p><strong>Rating:</strong> <span id="popup-rating"></span></p>
+        <p><strong>Data:</strong> <span id="popup-date"></span></p>
+    </div>
+</div>
+
+<script>
+    function openPopup(id, user, comment, rating, date) {
+        document.getElementById('popup-id').innerText = id;
+        document.getElementById('popup-user').innerText = user;
+        document.getElementById('popup-comment').innerText = comment;
+        document.getElementById('popup-rating').innerText = rating;
+        document.getElementById('popup-date').innerText = date;
+        document.getElementById('feedbackPopup').style.display = 'flex';
+    }
+
+    function closePopup() {
+        document.getElementById('feedbackPopup').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>

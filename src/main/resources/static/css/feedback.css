@@ -100,3 +100,45 @@ h2 {
     font-size: 20px;
     cursor: pointer;
 }
+
+/* Estilo do botão com gradiente azul */
+.chart-button-container {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 50px; /* Adiciona espaço abaixo do botão */
+}
+
+#showChartButton {
+    padding: 15px 30px;
+    background: linear-gradient(45deg, #1e90ff, #00bfff); /* Gradiente azul */
+    color: white;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 18px;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+#showChartButton:hover {
+    background: linear-gradient(45deg, #1c86ee, #1e90ff); /* Alteração do gradiente ao passar o mouse */
+    box-shadow: 0 15px 20px rgba(0, 0, 0, 0.3);
+    transform: translateY(-7px); /* Efeito de elevação */
+}
+
+.icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    color: #007bff;
+    transition: color 0.3s ease;
+}
+
+.icon-button:hover {
+    color: #0056b3; /* Cor muda ao passar o mouse */
+}
+
+.icon-button:focus {
+    outline: none;
+}

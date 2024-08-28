@@ -75,7 +75,11 @@
         document.getElementById('popup-date').innerText = date;
         document.getElementById('feedbackPopup').style.display = 'flex';
     }
-
+ function formatDate(dateString) {
+        const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+        return new Date(dateString).toLocaleDateString('pt-BR', options);
+    }
+    
     function closePopup() {
         document.getElementById('feedbackPopup').style.display = 'none';
     }
@@ -118,13 +122,14 @@
 
                             // Define o evento de clique para abrir o popup com os detalhes do feedback
                             row.addEventListener('click', () => openPopup(feedback.id, feedback.usuario, feedback.comentario, feedback.rating, feedback.data));
+const formattedDate = formatDate(feedback.data);
 
                             row.innerHTML = `
                                 <td>${feedback.id}</td>
                                 <td>${feedback.usuario}</td>
                                 <td>${feedback.comentario}</td>
                                 <td>${feedback.rating}</td>
-                                <td>${feedback.data}</td>
+                                <td>${formattedDate}</td>
                             `;
 
                             tableBody.appendChild(row);

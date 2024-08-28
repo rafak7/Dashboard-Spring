@@ -1,7 +1,7 @@
 package com.analyzer.controller;
 
 import com.analyzer.model.Usuario;
-import com.analyzer.service.CargoService;
+import com.analyzer.service.ClienteService;
 import com.analyzer.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,7 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -20,7 +19,7 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @Autowired
-    private CargoService cargoService;
+    private ClienteService cargoService;
 
     @GetMapping("/usuarios")
     public String listarUsuarios(Model model) {

@@ -3,20 +3,22 @@ package com.analyzer.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests
-                                .anyRequest().permitAll() // Permitir acesso a todas as rotas sem autenticação
+                .authorizeHttpRequests(authorize -> authorize
+                        .anyRequest().permitAll()
                 )
-                .formLogin().disable() // Desabilitar a página de login temporariamente
-                .logout().disable(); // Desabilitar logout temporariamente
+                .csrf(csrf -> csrf.disable())
+                .formLogin().disable()
+                .httpBasic().disable();
 
         return http.build();
     }

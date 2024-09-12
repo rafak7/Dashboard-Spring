@@ -25,14 +25,13 @@ public class UsuarioController {
     public String listarUsuarios(Model model) {
         List<Usuario> usuarios = usuarioService.listarTodos();
         model.addAttribute("usuarios", usuarios);
-        return "admin/usuarios"; // Nome do template com o caminho
+        return "admin/usuarios";
     }
 
     @GetMapping("/usuarios/novo")
     public String novoUsuarioForm(Model model) {
         model.addAttribute("usuario", new Usuario());
-        model.addAttribute("cargos", cargoService.listarTodos());
-        return "admin/formulario";  // Corrigido para usar o caminho correto
+        return "admin/formulario";
     }
 
     @PostMapping("/usuarios")
@@ -47,15 +46,23 @@ public class UsuarioController {
                 .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + id));
         model.addAttribute("usuario", usuario);
         model.addAttribute("cargos", cargoService.listarTodos());
-        return "admin/formulario";  // Corrigido para usar o caminho correto
+        return "admin/formulario";
     }
 
     @PostMapping("/usuarios/editar/{id}")
     public String atualizarUsuario(@PathVariable Long id, Usuario usuario) {
         Usuario usuarioExistente = usuarioService.buscarPorId(id)
                 .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + id));
-        usuario.setId(usuarioExistente.getId());
-        usuarioService.salvar(usuario);
+
+        usuarioExistente.setNome(usuario.getNome());
+        usuarioExistente.setEmail(usuario.getEmail());
+
+        if (!usuario.getSenha().isEmpty()) {
+            usuarioExistente.setSenha(usuario.getSenha());
+        }
+
+        usuarioService.salvar(usuarioExistente);
+
         return "redirect:/usuarios";
     }
 
@@ -66,4 +73,5 @@ public class UsuarioController {
         usuarioService.deletarPorId(id);
         return "redirect:/usuarios";
     }
+
 }

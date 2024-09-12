@@ -23,8 +23,4 @@ public class Usuario {
     private String email;
     private String senha;
 
-    @ManyToOne
-    @JoinColumn(name = "cargo_id")
-    private Cliente cargo;
-
 }

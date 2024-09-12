@@ -14,17 +14,14 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    // Método para salvar ou atualizar um Usuario
     public Usuario salvar(Usuario usuario) {
         return usuarioRepository.save(usuario);
     }
 
-    // Método para contar o número total de usuários
     public long count() {
         return usuarioRepository.count();
     }
 
-    // Outros métodos do serviço...
     public List<Usuario> listarTodos() {
         return usuarioRepository.findAll();
     }

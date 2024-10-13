@@ -1,10 +1,210 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Feedbacks de Interações URA</title>
+    <link rel="stylesheet" th:href="@{/css/feedback.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
+
+<div class="feedback-container">
+    <div class="back-button">
+        <a href="/dashboard">
+            <span class="icon">&#8592;</span> Voltar
+        </a>
+    </div>
+    <h2>Últimos Feedbacks URA</h2>
+
+    <div class="refresh-button-container">
+        <button id="refreshButton" class="icon-button">
+            <i class="fas fa-sync-alt"></i>
+        </button>
+    </div>
+
+    <table class="feedback-table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Usuário</th>
+            <th>Comentário</th>
+            <th>Rating</th>
+            <th>Data</th>
+        </tr>
+        </thead>
+        <tbody id="feedback-table-body">
+        <!-- Feedbacks URA serão inseridos aqui via JavaScript -->
+        </tbody>
+    </table>
+</div>
+
+<div class="chart-button-container">
+    <button id="showChartButton">Exibir Gráfico de Feedbacks</button>
+</div>
+
+<div id="chartPopup" class="popup">
+    <div class="popup-content">
+        <span class="close-btn" onclick="closeChartPopup()">&times;</span>
+        <h2>Distribuição de Feedbacks</h2>
+        <canvas id="feedbackChart"></canvas>
+    </div>
+</div>
+
+<div id="feedbackPopup" class="popup">
+    <div class="popup-content">
+        <span class="close-btn" onclick="closePopup()">&times;</span>
+        <h2>Detalhes do Feedback</h2>
+        <p><strong>ID:</strong> <span id="popup-id"></span></p>
+        <p><strong>Usuário:</strong> <span id="popup-user"></span></p>
+        <p><strong>Comentário:</strong> <span id="popup-comment"></span></p>
+        <p><strong>Rating:</strong> <span id="popup-rating"></span></p>
+        <p><strong>Data:</strong> <span id="popup-date"></span></p>
+    </div>
+</div>
+
+<script>
+    function openPopup(id, user, comment, rating, date) {
+        document.getElementById('popup-id').innerText = id;
+        document.getElementById('popup-user').innerText = user;
+        document.getElementById('popup-comment').innerText = comment;
+        document.getElementById('popup-rating').innerText = rating;
+        document.getElementById('popup-date').innerText = date;
+        document.getElementById('feedbackPopup').style.display = 'flex';
+    }
+
+    function formatDate(dateString) {
+        const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+        return new Date(dateString).toLocaleDateString('pt-BR', options);
+    }
+
+    function closePopup() {
+        document.getElementById('feedbackPopup').style.display = 'none';
+    }
+
+    function closeChartPopup() {
+        document.getElementById('chartPopup').style.display = 'none';
+    }
+
+    function fetchFeedbacks() {
+        console.log('Buscando feedbacks...');
+
+        fetch('https://expi-e7219-default-rtdb.firebaseio.com/ura.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro na resposta da API');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Dados recebidos:', data);
+
+                const tableBody = document.getElementById('feedback-table-body');
+                tableBody.innerHTML = '';  // Limpa o corpo da tabela antes de popular
+
+                let ratingCounts = {
+                    'Neutro': 0,
+                    'Bom': 0,
+                    'Ruim': 0,
+                    'Insatisfeito': 0
+                };
+
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const feedback = data[key];
+
+                        // Verifica se todas as propriedades necessárias estão presentes
+                        if (feedback && feedback.id && feedback.usuario && feedback.comentario && feedback.rating && feedback.data) {
+                            const row = document.createElement('tr');
+
+                            // Define o evento de clique para abrir o popup com os detalhes do feedback
+                            row.addEventListener('click', () => openPopup(feedback.id, feedback.usuario, feedback.comentario, feedback.rating, feedback.data));
+                            const formattedDate = formatDate(feedback.data);
+
+                            row.innerHTML = `
+                                <td>${feedback.id}</td>
+                                <td>${feedback.usuario}</td>
+                                <td>${feedback.comentario}</td>
+                                <td>${feedback.rating}</td>
+                                <td>${formattedDate}</td>
+                            `;
+
+                            tableBody.appendChild(row);
+
+                            // Contagem dos ratings para o gráfico
+                            if (ratingCounts.hasOwnProperty(feedback.rating)) {
+                                ratingCounts[feedback.rating]++;
+                            } else {
+                                console.warn('Rating inesperado:', feedback.rating);
+                            }
+                        } else {
+                            console.warn('Feedback inválido ou propriedades ausentes:', feedback);
+                        }
+                    });
+                } else {
+                    console.log('Nenhum feedback encontrado.');
+                }
+
+                window.ratingCounts = ratingCounts;
+            })
+            .catch(error => {
+                console.error('Erro ao buscar feedbacks:', error);
+            });
+    }
+
+    function generateChart() {
+        const ctx = document.getElementById('feedbackChart').getContext('2d');
+        const labels = ['Neutro', 'Bom', 'Ruim', 'Insatisfeito'];
+        const data = [
+            window.ratingCounts['Neutro'],
+            window.ratingCounts['Bom'],
+            window.ratingCounts['Ruim'],
+            window.ratingCounts['Insatisfeito']
+        ];
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Quantidade de Feedbacks',
+                    data: data,
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.2)', // Neutro
+                        'rgba(54, 162, 235, 0.2)', // Bom
+                        'rgba(255, 99, 132, 0.2)', // Ruim
+                        'rgba(255, 159, 64, 0.2)'  // Insatisfeito
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    document.getElementById('showChartButton').addEventListener('click', function() {
+        document.getElementById('chartPopup').style.display = 'flex';
+        generateChart();
+    });
+
+    document.getElementById('refreshButton').addEventListener('click', function() {
+        location.reload();
+    });
+
+    window.onload = fetchFeedbacks;
+</script>
 
 </body>
 </html>
